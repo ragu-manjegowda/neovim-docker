@@ -10,13 +10,12 @@ LABEL \
     url.dockerhub="https://hub.docker.com/r/ragumanjegowda/neovim-docker/"
 
 ENV \
-        UID="1000" \
-        GID="1000" \
-        UNAME="neovim" \
-        GNAME="neovim" \
-        SHELL="/bin/bash" \
-        WORKSPACE="/mnt/workspace" \
-    NVIM_CONFIG="/home/neovim/.config/nvim" \
+    UID="1000" \
+    GID="1000" \
+    UNAME="neovim" \
+    GNAME="neovim" \
+    SHELL="/bin/bash" \
+    WORKSPACE="/mnt/workspace" \
     ENV_DIR="/home/neovim/.local/share/vendorvenv" \
     NVIM_PROVIDER_PYLIB="python3_neovim_provider" \
     PATH="/home/neovim/.local/bin:${PATH}"
@@ -49,11 +48,13 @@ RUN \
     # tools for mason
     npm \
     go \
-    clang \
+    clang-extra-tools \
     # rg for telescope
-    ripgrep \
+    ripgrep
+
+RUN \
     # install build packages
-    && apk --no-cache add --virtual build-dependencies \
+    apk --no-cache add --virtual build-dependencies \
     python3-dev \
     gcc \
     musl-dev \
@@ -70,6 +71,16 @@ RUN \
 COPY entrypoint.sh /usr/local/bin/
 
 VOLUME "${WORKSPACE}"
-VOLUME "${NVIM_CONFIG}"
+
+RUN \
+    # Download Ragu's nvim config
+    curl https://codeload.github.com/ragu-manjegowda/config/tar.gz/master | \
+        tar -xz --strip=2 config-master/.config/nvim
+
+RUN \
+    mkdir -p /home/neovim/.config && mv nvim /home/neovim/.config \
+    && su-exec neovim nvim --headless -c "Lazy! sync" +qa &> /dev/null
+
+WORKDIR "${WORKSPACE}"
 
 ENTRYPOINT ["sh", "/usr/local/bin/entrypoint.sh"]

@@ -20,9 +20,9 @@ if docker inspect "$IMAGE_NAME:$TAG" &> /dev/null; then
         docker stop "$CONTAINER_ID" && docker rm "$CONTAINER_ID"
     fi
 
-    # Remove the image with the specified tag
-    echo "Removing existing image $IMAGE_NAME:$TAG..."
-    docker rmi "$IMAGE_NAME:$TAG"
+    # # Remove the image with the specified tag
+    # echo "Removing existing image $IMAGE_NAME:$TAG..."
+    # docker rmi "$IMAGE_NAME:$TAG"
 fi
 
 docker build -t $IMAGE_NAME:$TAG .
@@ -44,7 +44,6 @@ if [ "$(uname)" == "Darwin" ]; then
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 
     eval docker run --rm -it -e UID="$(id -u)" -e GID="$(id -g)" \
-    -v "${HOME}"/.config/nvim:/home/neovim/.config/nvim \
     -v "${PWD}":/mnt/workspace \
     "neovim-docker:test" \
 

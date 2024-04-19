@@ -20,7 +20,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
             if [[ $# -gt 0 ]]; then
                 docker stop nvim && docker rm nvim
                 docker run --name nvim -it -e UID="$(id -u)" -e GID="$(id -g)" \
-                -v "${HOME}"/.config/nvim:/home/neovim/.config/nvim \
                 -v "${PWD}":/mnt/workspace \
                 "ragumanjegowda/neovim-docker:latest" "$@"
             else
@@ -29,7 +28,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
             fi
         else
             docker run --name nvim -it -e UID="$(id -u)" -e GID="$(id -g)" \
-            -v "${HOME}"/.config/nvim:/home/neovim/.config/nvim \
             -v "${PWD}":/mnt/workspace \
             "ragumanjegowda/neovim-docker:latest" "$@"
         fi
