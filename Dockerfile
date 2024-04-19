@@ -68,18 +68,23 @@ RUN \
     # remove build packages
     && apk del build-dependencies
 
-COPY entrypoint.sh /usr/local/bin/
-
-VOLUME "${WORKSPACE}"
-
 RUN \
     # Download Ragu's nvim config
     curl https://codeload.github.com/ragu-manjegowda/config/tar.gz/master | \
         tar -xz --strip=2 config-master/.config/nvim
 
 RUN \
+    # Copy nvim config and update plugins
     mkdir -p /home/neovim/.config && mv nvim /home/neovim/.config \
     && su-exec neovim nvim --headless -c "Lazy! sync" +qa &> /dev/null
+
+RUN \
+    # Assume git repos are safe to avoid dubious ownership warnings
+    git config --global --add safe.directory '*'
+
+COPY entrypoint.sh /usr/local/bin/
+
+VOLUME "${WORKSPACE}"
 
 WORKDIR "${WORKSPACE}"
 
